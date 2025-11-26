@@ -21,15 +21,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Download SDL2 binaries
-        run: |
-          Invoke-WebRequest https://www.libsdl.org/release/SDL2-devel-2.32.10-VC.zip -OutFile SDL2.zip
-          Expand-Archive SDL2.zip -DestinationPath C:\SDL2
-          [System.Environment]::SetEnvironmentVariable("SDL2_ROOT", "C:\SDL2", "Machine")
-        shell: pwsh
-
       - name: Copy SDL2.dll to target
-        run: Copy-Item "C:\SDL2\lib\x64\SDL2.dll" "./code/desktop/target/${{ matrix.target }}/release/"
+        run: Copy-Item "lib/x86/SDL2.dll" "./code/desktop/target/${{ matrix.target }}/release/"
         shell: pwsh
 
       - name: Build
