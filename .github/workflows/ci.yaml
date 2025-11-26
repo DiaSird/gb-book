@@ -22,10 +22,10 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Build
-        run: cargo build --release --target ${{ matrix.target }} -p desktop
+        run: cargo build --release -p desktop
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: desktop-${{ matrix.os }}
-          path: ./code/desktop/target/${{ matrix.target }}/release/desktop*
+          path: ${{github.workspace}}/code/desktop/target/release/desktop*
