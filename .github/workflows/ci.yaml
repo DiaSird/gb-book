@@ -22,7 +22,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Build
-        run: $env:SDL2_ROOT = "${{ github.workspace }}/SDL2-2.32.10" && cargo build --release --target ${{ matrix.target }} -p desktop
+        run: cargo build --release --target ${{ matrix.target }} -p desktop
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
