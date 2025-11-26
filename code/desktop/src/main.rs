@@ -4,7 +4,7 @@ use crate::debug::Debugger;
 
 use gb_core::cpu::Cpu;
 use gb_core::io::Buttons;
-use gb_core::utils::{SCREEN_HEIGHT, SCREEN_WIDTH, DISPLAY_BUFFER};
+use gb_core::utils::{DISPLAY_BUFFER, SCREEN_HEIGHT, SCREEN_WIDTH};
 
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
@@ -40,8 +40,12 @@ fn main() {
 
     let sdl_context = sdl2::init().unwrap();
     let video_subsystem = sdl_context.video().unwrap();
-    let window = video_subsystem.window(title, WINDOW_WIDTH, WINDOW_HEIGHT)
-        .position_centered().opengl().build().unwrap();
+    let window = video_subsystem
+        .window(title, WINDOW_WIDTH, WINDOW_HEIGHT)
+        .position_centered()
+        .opengl()
+        .build()
+        .unwrap();
     let mut canvas = window.into_canvas().present_vsync().build().unwrap();
     canvas.clear();
     canvas.present();
@@ -50,23 +54,35 @@ fn main() {
     'gameloop: loop {
         for event in events.poll_iter() {
             match event {
-                Event::Quit{..} |
-                Event::KeyDown{keycode: Some(Keycode::Escape), ..} => {
+                Event::Quit { .. }
+                | Event::KeyDown {
+                    keycode: Some(Keycode::Escape),
+                    ..
+                } => {
                     break 'gameloop;
-                },
-                Event::KeyDown{keycode: Some(Keycode::Space), ..} => {
+                }
+                Event::KeyDown {
+                    keycode: Some(Keycode::Space),
+                    ..
+                } => {
                     gbd.set_debugging(true);
-                },
-                Event::KeyDown{keycode: Some(keycode), ..} => {
+                }
+                Event::KeyDown {
+                    keycode: Some(keycode),
+                    ..
+                } => {
                     if let Some(button) = key2btn(keycode) {
                         gb.press_button(button, true);
                     }
-                },
-                Event::KeyUp{keycode: Some(keycode), ..} => {
+                }
+                Event::KeyUp {
+                    keycode: Some(keycode),
+                    ..
+                } => {
                     if let Some(button) = key2btn(keycode) {
                         gb.press_button(button, false);
                     }
-                },
+                }
                 _ => {}
             }
         }
@@ -93,15 +109,23 @@ fn draw_screen(data: &[u8], canvas: &mut Canvas<Window>) {
 
 fn key2btn(key: Keycode) -> Option<Buttons> {
     match key {
-        Keycode::Down =>        { Some(Buttons::Down)   },
-        Keycode::Up =>          { Some(Buttons::Up)     },
-        Keycode::Left =>        { Some(Buttons::Left)   },
-        Keycode::Right =>       { Some(Buttons::Right)  },
-        Keycode::Return =>      { Some(Buttons::Start)  },
-        Keycode::Backspace =>   { Some(Buttons::Select) },
-        Keycode::X =>           { Some(Buttons::A)      },
-        Keycode::Z =>           { Some(Buttons::B)      },
-        _ =>                    { None                  }
+        // Keycode::Down =>        { Some(Buttons::Down)   },
+        // Keycode::Up =>          { Some(Buttons::Up)     },
+        // Keycode::Left =>        { Some(Buttons::Left)   },
+        // Keycode::Right =>       { Some(Buttons::Right)  },
+        // Keycode::Return =>      { Some(Buttons::Start)  },
+        // Keycode::Backspace =>   { Some(Buttons::Select) },
+        // Keycode::X =>           { Some(Buttons::A)      },
+        // Keycode::Z =>           { Some(Buttons::B)      },
+        Keycode::S => Some(Buttons::Down),
+        Keycode::W => Some(Buttons::Up),
+        Keycode::A => Some(Buttons::Left),
+        Keycode::D => Some(Buttons::Right),
+        Keycode::Return => Some(Buttons::Start),
+        Keycode::Z => Some(Buttons::Select),
+        Keycode::L => Some(Buttons::A),
+        Keycode::K => Some(Buttons::B),
+        _ => None,
     }
 }
 
@@ -113,7 +137,9 @@ fn load_battery_save(gb: &mut Cpu, gamename: &str) {
 
         let f = OpenOptions::new().read(true).open(filename);
         if f.is_ok() {
-            f.unwrap().read_to_end(&mut battery_data).expect("Error reading save file");
+            f.unwrap()
+                .read_to_end(&mut battery_data)
+                .expect("Error reading save file");
             gb.set_battery_data(&battery_data);
         }
     }
@@ -162,7 +188,11 @@ fn write_battery_save(gb: &mut Cpu, gamename: &str) {
         let mut filename = gamename.to_owned();
         filename.push_str(".sav");
 
-        let mut file = OpenOptions::new().write(true).create(true).open(filename).expect("Error opening save file");
+        let mut file = OpenOptions::new()
+            .write(true)
+            .create(true)
+            .open(filename)
+            .expect("Error opening save file");
         file.write(battery_data).unwrap();
         gb.clean_battery();
     }
