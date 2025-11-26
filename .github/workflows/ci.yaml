@@ -28,6 +28,10 @@ jobs:
           [System.Environment]::SetEnvironmentVariable("SDL2_ROOT", "C:\SDL2", "Machine")
         shell: pwsh
 
+      - name: Copy SDL2.dll to target
+        run: Copy-Item "C:\SDL2\lib\x64\SDL2.dll" "./code/desktop/target/${{ matrix.target }}/release/"
+        shell: pwsh
+
       - name: Build
         run: cargo build --release --target ${{ matrix.target }} -p desktop
 
