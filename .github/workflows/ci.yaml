@@ -20,12 +20,13 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - uses: libsdl-org/setup-sdl@main
-        id: sdl
-        with:
-          install-linux-dependencies: true
-          version: 2-latest
-          version-sdl-image: 2-latest
+
+      - name: Download SDL2 binaries
+        run: |
+          Invoke-WebRequest https://www.libsdl.org/release/SDL2-devel-2.32.10-VC.zip -OutFile SDL2.zip
+          Expand-Archive SDL2.zip -DestinationPath C:\SDL2
+          [System.Environment]::SetEnvironmentVariable("SDL2_ROOT", "C:\SDL2", "Machine")
+        shell: pwsh
 
       - name: Build
         run: cargo build --release --target ${{ matrix.target }} -p desktop
