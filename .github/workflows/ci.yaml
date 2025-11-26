@@ -21,12 +21,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Copy SDL2.dll to target
-        run: Copy-Item "lib/x86/SDL2.dll" "./code/desktop/target/${{ matrix.target }}/release/"
-        shell: pwsh
-
       - name: Build
         run: cargo build --release --target ${{ matrix.target }} -p desktop
+
+      - name: Copy SDL2.dll to release folder
+        run: |
+          $target_dir = "./code/desktop/target/${{ matrix.target }}/release"
+          if (-not (Test-Path $target_dir)) { New-Item -ItemType Directory -Path $target_dir | Out-Null }
+          Copy-Item "lib/x86/SDL2.dll" $target_dir
+        shell: pwsh
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
